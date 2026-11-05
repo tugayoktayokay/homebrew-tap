@@ -20,9 +20,10 @@ class Spavn < Formula
       url "https://github.com/tugayoktayokay/spavn-cli/releases/download/v#{version}/spavn-x86_64-unknown-linux-gnu.tar.gz"
       sha256 "e13501777996c574f1a8dd5c50e2b99a51ae508d1e509797ee7f3a5de776ac94"
     end
-    # aarch64 Linux has no asset for 0.1.0 — the release matrix grew that target after the tag was
-    # cut. Add an `on_arm` block here when the next tag publishes spavn-aarch64-unknown-linux-gnu,
-    # otherwise `brew install` on Linux arm64 would fail sha256 verification against a missing file.
+    # linux-arm region: owned by sync-tap.sh. It emits the block below only when the tag actually
+    # published an aarch64-unknown-linux-gnu archive, so no version ever points at a missing file.
+    # BEGIN linux-arm
+    # END linux-arm
   end
 
   livecheck do
