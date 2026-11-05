@@ -1,30 +1,37 @@
 # homebrew-tap
 
-Homebrew formulae for [spavn](https://spavn.dev) and friends.
+Homebrew formulae for [spavn](https://spavn.dev) — the terminal-native coding agent.
 
 ```sh
 brew install tugayoktayokay/tap/spavn
-brew upgrade spavn
 ```
 
 ## Formulae
 
 | Formula | What it is |
 | :--- | :--- |
-| `spavn` | Terminal-native coding agent, one Rust binary |
+| `spavn` | One Rust binary: coding agent, tool harness, TUI. macOS (arm64, x86_64) and Linux (x86_64) prebuilt; installs `spavn` plus the `spvn` alias. |
 
-## Updating a formula
+## Updating
 
-Release first, then bump the tap — the formula pins published archives by SHA-256, so a version
-that is only tagged but not released would 404.
+`Formula/spavn.rb` is **generated**, not hand-edited. It carries one `sha256` per platform, so it can
+only be written after the release archives exist:
 
 ```sh
-# after `git tag vX.Y.Z && git push --tags` and the Release workflow finishes
-for a in aarch64-apple-darwin x86_64-apple-darwin x86_64-unknown-linux-gnu; do
-  printf '%s  ' "$a"
-  curl -sL "https://github.com/tugayoktayokay/spavn-cli/releases/download/vX.Y.Z/spavn-$a.tar.gz.sha256"
-done
+sh packaging/homebrew/sync-tap.sh 0.2.0 /path/to/homebrew-tap
 ```
 
-Paste the three new digests into `Formula/spavn.rb`, bump `version`, run
-`brew audit --strict Formula/spavn.rb`, and commit.
+That script lives in [`spavn-cli`](https://github.com/tugayoktayokay/spavn-cli/tree/main/packaging/homebrew).
+It fails closed: if a tag has no archive for a platform, the formula is not written at all rather than
+pointing at a URL that 404s.
+
+Linux arm64 is emitted only when that tag published an `aarch64-unknown-linux-gnu` archive; the region
+between the `# BEGIN linux-arm` / `# END linux-arm` markers is owned by the script, so a version that
+skipped that target silently drops back to the x86_64 bottle.
+
+## Uninstall
+
+```sh
+brew uninstall spavn
+brew untap tugayoktayokay/tap
+```
